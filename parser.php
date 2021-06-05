@@ -50,5 +50,8 @@ if (!empty($headers)) {
     }
 }
 
-echo implode("\n\n", array_column($article_parts, 'html')); die();
+$html = implode("\n\n", array_column($article_parts, 'html'));
+file_put_contents('result.html', $html);
+
+
 var_dump($article_parts); die();
