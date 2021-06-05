@@ -41,10 +41,14 @@ if (!empty($headers)) {
                 Helpers::printMessage('Пробуем получить статью: '.$link, 'grey');
                 $article = $parser->getArticle($link);
                 if (!empty($article)) {
+                    Helpers::printMessage('Получим картинку', 'grey');
+                    $image_src = $searcher->getImageSrc($header['header']);
+
                     $article_parts[] = [
-                        'source' => $link,
-                        'header' => $header,
-                        'html'   => $article,
+                        'source'    => $link,
+                        'header'    => $header,
+                        'html'      => $article,
+                        'image_src' => $image_src,
                     ];
 
                     break;
@@ -56,6 +60,7 @@ if (!empty($headers)) {
 
 Helpers::printMessage('Статья сформирована: '.$link, 'green');
 $html = implode("\n\n", array_column($article_parts, 'html'));
+$html .= implode("\n", array_column($article_parts, 'image_src'));
 file_put_contents('result.html', $html);
 
 

@@ -16,7 +16,7 @@ class Searcher
      */
     public function getLinks(string $query): array
     {
-        $url = 'https://searx.roughs.ru/search?q='.urlencode($query).'&format=json';
+        $url = 'https://searx.roughs.ru/search?q='.urlencode($query).'&language=ru-RU&format=json';
         $response = file_get_contents($url);
         $response = json_decode($response, true);
         
@@ -28,5 +28,25 @@ class Searcher
         }
 
         return $links;
+    }
+
+    /**
+     * Получение картинки по запросу
+     * https://m.habr.com/ru/post/545196/
+     * 
+     * @param  string $query Поисковой запрос
+     */
+    public function getImageSrc(string $query)
+    {
+        $url = 'https://searx.roughs.ru/search?q='.urlencode($query).'&language=ru-RU&format=json&categories=images&safesearch=1';
+        $response = file_get_contents($url);
+        $response = json_decode($response, true);
+        
+        $image_src = null;
+        if (!empty($response['results'][0]['img_src'])) {
+            $image_src = $response['results'][0]['img_src'];
+        }
+
+        return $image_src;
     }
 }
