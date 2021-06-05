@@ -25,7 +25,7 @@ $url = 'https://www.botanichka.ru/article/pochemu-plachet-abrikos-o-kamedetechen
 Helpers::printMessage('Получим заголовки с сайта '.$url);
 $headers = $parser->getHeaders($url);
 
-$article_parts = [];
+$article = new Article();
 
 if (!empty($headers)) {
     foreach ($headers as $key_headers => $header) {
@@ -39,17 +39,18 @@ if (!empty($headers)) {
                 if ($key_links < 5)  { continue; }
 
                 Helpers::printMessage('Пробуем получить статью: '.$link, 'grey');
-                $article = $parser->getArticle($link);
-                if (!empty($article)) {
+                $article_html = $parser->getArticle($link);
+                if (!empty($article_html)) {
                     Helpers::printMessage('Получим картинку', 'grey');
                     $image_src = $searcher->getImageSrc($header['header']);
 
-                    $article_parts[] = [
-                        'source'    => $link,
-                        'header'    => $header,
-                        'html'      => $article,
-                        'image_src' => $image_src,
-                    ];
+                    $article->addArticleParts([
+                        'source'        => $link,
+                        'header'        => $header['header'],
+                        'type_header'   => $header['type'],
+                        'html'          => $article_html,
+                        'image_src'     => $image_src,
+                    ]);
 
                     break;
                 }
@@ -58,10 +59,8 @@ if (!empty($headers)) {
     }
 }
 
-Helpers::printMessage('Статья сформирована: '.$link, 'green');
-$html = implode("\n\n", array_column($article_parts, 'html'));
-$html .= implode("\n", array_column($article_parts, 'image_src'));
-file_put_contents('result.html', $html);
+Helpers::printMessage('Статья сформирована', 'green');
+$article->save(__DIR__.'/results');
 
 
 // var_dump($article_parts); die();
