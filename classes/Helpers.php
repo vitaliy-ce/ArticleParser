@@ -41,4 +41,29 @@ class Helpers
         
         return $html;
     }
+
+    public static function printMessage($message, $text_color = '')
+    {
+        switch ($text_color) {
+            case 'red':
+                $color_code = '0;31'; break;
+            case 'green':
+                $color_code = '0;32'; break;
+            case 'yellow':
+                $color_code = '1;33'; break;
+            case 'white':
+                $color_code = '1;37'; break;
+            case 'grey':
+                $color_code = '0;37'; break;
+
+            default: 
+                $color_code = '1;37'; break;
+        }
+        
+        $total_message = "\033[0;37m[".date('H:i:s d.m.Y')."]\033[0m ";
+        $total_message .= "\033[".$color_code."m".$message."\033[0m";
+        $total_message .= "\n";
+
+        echo $total_message;
+    }
 }

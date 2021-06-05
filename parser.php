@@ -21,13 +21,16 @@ $parser = new ParserSite();
 $searcher = new Searcher();
 
 // Получение заголовоков
-$headers = $parser->getHeaders('https://www.botanichka.ru/article/pochemu-plachet-abrikos-o-kamedetechenii-podrobno/');
+$url = 'https://www.botanichka.ru/article/pochemu-plachet-abrikos-o-kamedetechenii-podrobno/';
+Helpers::printMessage('Получим заголовки с сайта '.$url);
+$headers = $parser->getHeaders($url);
 
 $article_parts = [];
 
 if (!empty($headers)) {
-    foreach ($headers as $header) {
+    foreach ($headers as $key_headers => $header) {
         // Получение сайтов по запросу
+        Helpers::printMessage('['.($key_headers + 1).' из '.count($headers).'] Получим сайты по запросу: '.$header['header']);
         $links = $searcher->getLinks($header['header']);
 
         if (!empty($links)) {
@@ -35,6 +38,7 @@ if (!empty($headers)) {
                 // Пропускаем первые 5 результатов
                 if ($key_links < 5)  { continue; }
 
+                Helpers::printMessage('Пробуем получить статью: '.$link, 'grey');
                 $article = $parser->getArticle($link);
                 if (!empty($article)) {
                     $article_parts[] = [
@@ -50,6 +54,7 @@ if (!empty($headers)) {
     }
 }
 
+Helpers::printMessage('Статья сформирована: '.$link, 'green');
 $html = implode("\n\n", array_column($article_parts, 'html'));
 file_put_contents('result.html', $html);
 
