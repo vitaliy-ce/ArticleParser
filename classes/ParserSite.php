@@ -65,8 +65,8 @@ class ParserSite
             $tmp = [];
             $tmp['raw']         = $div;
             $tmp['class']       = $div_pq->attr('class');
-            $tmp['count_p']     = $div_pq->find('p')->length;
-            $tmp['count_div']   = $div_pq->find('div')->length;
+            $tmp['count_p']     = $div_pq->find('p')->length ?? 0;
+            $tmp['count_div']   = $div_pq->find('div')->length ?? 0;
 
             if ($tmp['count_div'] > 0 && $tmp['count_p'] > 0) {
                 $tmp['ratio'] = $tmp['count_p'] / $tmp['count_div'];
@@ -179,7 +179,7 @@ class ParserSite
 
     private function getDocument(string $url)
     {
-        $html = file_get_contents($url);
+        $html = Helpers::getHtmlByUrl($url);
         $document = phpQuery::newDocument($this->charset_fix.$html);
 
         return $document;

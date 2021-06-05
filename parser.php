@@ -54,4 +54,4 @@ $html = implode("\n\n", array_column($article_parts, 'html'));
 file_put_contents('result.html', $html);
 
 
-var_dump($article_parts); die();
+// var_dump($article_parts); die();
