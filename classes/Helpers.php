@@ -18,9 +18,9 @@ class Helpers
         $headers = array(
             'cache-control: max-age=0',
             'upgrade-insecure-requests: 1',
-            'user-agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36',
+            'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36',
             'sec-fetch-user: ?1',
-            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'x-compress: null',
             'sec-fetch-site: none',
             'sec-fetch-mode: navigate',
@@ -29,15 +29,29 @@ class Helpers
         );
          
         $ch = curl_init($url);
-        // curl_setopt($ch, CURLOPT_COOKIEFILE, __DIR__ . '/cookie.txt');
-        // curl_setopt($ch, CURLOPT_COOKIEJAR, __DIR__ . '/cookie.txt');
+        // curl_setopt($ch, CURLOPT_COOKIEFILE, __DIR__ . '/../cookie.txt');
+        // curl_setopt($ch, CURLOPT_COOKIEJAR, __DIR__ . '/../cookie.txt');
+        curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); //следование 302 redirect 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+
         $html = curl_exec($ch);
-        curl_close($ch);
-         
+        
+        // DEBUG
+        // curl_setopt($ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($ch, CURLOPT_STDERR, fopen('php://stderr', 'w'));
+        // if ($html === FALSE) {
+        //     echo 'cURL Error: ' . curl_error($ch)."\n";
+        //     echo 'cURL Error: ' . curl_errno($ch)."\n";
+        //     var_dump($html); die();
+        //     return;
+        // }
+        
+        curl_close($ch);        
         
         return $html;
     }

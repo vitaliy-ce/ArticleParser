@@ -19,16 +19,21 @@ class ParserSite
      * 
      * @param  string $url Ссылка на страницу
      */
-    public function getHeaders(string $url): array
+    public function getHeaders(string $url)
     {
         $headers = [];
         $document = $this->getDocument($url);
+        if (!$document) { return false; }
+
 
         // Заголовок h1
-        $headers[] = [
-            'type'    => 'h1',
-            'header'  => $document->find('h1')->text(),
-        ];
+        $h1 = $document->find('h1')->text();
+        if (!empty($h1)) {
+            $headers[] = [
+                'type'    => 'h1',
+                'header'  => $h1,
+            ];
+        }
 
         // Заголовки h2
         foreach($document->find('.td-post-content h2') as $header) {
@@ -53,6 +58,7 @@ class ParserSite
     public function getArticle(string $url): string
     {
         $document = $this->getDocument($url);
+        if (!$document) { return false; }
 
         // Алгоритм
         // https://habr.com/ru/company/mailru/blog/200394/
@@ -180,8 +186,11 @@ class ParserSite
     private function getDocument(string $url)
     {
         $html = Helpers::getHtmlByUrl($url);
-        $document = phpQuery::newDocument($this->charset_fix.$html);
+        if (empty($html)) {
+            return false;
+        }
 
+        $document = phpQuery::newDocument($this->charset_fix.$html);
         return $document;
     }
 
