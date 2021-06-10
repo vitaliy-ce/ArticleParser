@@ -27,7 +27,7 @@ class Article
             mkdir($storage_dir, 0755, true);
         }
 
-        $html = $this->geеHtmlArticle();
+        $html = $this->getHtmlArticle();
 
         $article_xml = "\t<article>\n";
         $article_xml .= "\t\t<name>".$this->article_parts[0]['header']."</name>\n";
@@ -50,7 +50,7 @@ class Article
         file_put_contents($storage_dir.'/result.xml', $xml);
     }
 
-    private function geеHtmlArticle()
+    private function getHtmlArticle()
     {
         $html = '';
         if (!empty($this->article_parts)) {
