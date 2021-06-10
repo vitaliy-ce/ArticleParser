@@ -3,7 +3,6 @@
 class Article
 {
     private $article_parts;
-    private $article_html;
 
     public function __construct()
     {
@@ -28,20 +27,42 @@ class Article
             mkdir($storage_dir, 0755, true);
         }
 
-        $this->generateArticle();
-        file_put_contents($storage_dir.'/result.html', $this->article_html);
+        $html = $this->geеHtmlArticle();
+
+        $article_xml = "\t<article>\n";
+        $article_xml .= "\t\t<name>".$this->article_parts[0]['header']."</name>\n";
+        $article_xml .= "\t\t<title>".$this->article_parts[0]['header']."</title>\n";
+        $article_xml .= "\t\t<text><![CDATA[".$html."]]></title>\n";
+        $article_xml .= "\t</article>\n";
+        
+        $old_xml = '';
+        if (file_exists($storage_dir.'/result.xml')) {
+            $old_xml = file_get_contents($storage_dir.'/result.xml');
+            $old_xml = str_replace("<articles>\n", '', $old_xml);
+            $old_xml = str_replace("</articles>\n", '', $old_xml);
+        }
+        
+        $xml = "<articles>\n";
+        $xml .=  $old_xml;
+        $xml .=  $article_xml;
+        $xml .= "</articles>\n";
+
+        file_put_contents($storage_dir.'/result.xml', $xml);
     }
 
-    private function generateArticle()
+    private function geеHtmlArticle()
     {
+        $html = '';
         if (!empty($this->article_parts)) {
             foreach ($this->article_parts as $article_part) {
                 if (!empty($article_part['image_src'])) {
-                    $this->article_html .= '<img src="'.$article_part['image_src'].'">'."\n";
+                    $html .= '<img src="'.$article_part['image_src'].'">'."\n";
                 }
-                $this->article_html .= '<'.$article_part['type_header'].'>'.$article_part['header'].'</'.$article_part['type_header'].'>'."\n";                
-                $this->article_html .= $article_part['html']."\n";
+                $html .= '<'.$article_part['type_header'].'>'.$article_part['header'].'</'.$article_part['type_header'].'>'."\n";                
+                $html .= $article_part['html']."\n";
             }
         }
+
+        return $html;
     }
 }

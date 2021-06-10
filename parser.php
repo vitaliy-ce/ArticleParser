@@ -82,11 +82,12 @@ if (!empty($sources)) {
                 }
             }
         }
+
+        Helpers::printMessage('Статья сформирована', 'green');
+        $article->save(__DIR__.'/results');
     }
 }
 
-Helpers::printMessage('Статья сформирована', 'green');
-$article->save(__DIR__.'/results');
 
 
 // var_dump($article_parts); die();

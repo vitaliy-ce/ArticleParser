@@ -28,7 +28,7 @@ class Helpers
             'accept-language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         );
          
-        $ch = curl_init($url);
+        $ch = curl_init(trim($url));
         // curl_setopt($ch, CURLOPT_COOKIEFILE, __DIR__ . '/../cookie.txt');
         // curl_setopt($ch, CURLOPT_COOKIEJAR, __DIR__ . '/../cookie.txt');
         curl_setopt($ch, CURLOPT_HEADER, 0);
