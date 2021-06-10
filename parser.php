@@ -20,51 +20,58 @@ spl_autoload_register(function ($class_name) {
 $parser = new ParserSite();
 $searcher = new Searcher();
 
-// Получение заголовоков
-$url = 'https://www.botanichka.ru/article/pochemu-plachet-abrikos-o-kamedetechenii-podrobno/';
-Helpers::printMessage('Получим заголовки с сайта '.$url);
-$headers = $parser->getHeaders($url);
+// Ссылки для парсинга
+$sources = file_get_contents('_links.txt');
+$sources = explode("\n", $sources);
 
-$article = new Article();
-
-$skip_domains = [];
-$skip_domains[] = parse_url($url, PHP_URL_HOST);
-
-if (!empty($headers)) {
-    foreach ($headers as $key_headers => $header) {
-        // Получение сайтов по запросу
-        Helpers::printMessage('['.($key_headers + 1).' из '.count($headers).'] Получим сайты по запросу: '.$header['header']);
-        $links = $searcher->getLinks($header['header']);
-
-        if (!empty($links)) {
-            foreach ($links as $key_links => $link) {
-                // Пропускаем первые 5 результатов
-                if ($key_links < 3)  { continue; }
-
-                // Пропускаем сайты в которых встречается wiki т.к. на них много лишнего
-                if (stripos($link, 'wiki') !== false) { continue; }
-
-                // Пропускаем сайты с которых уже брали информацию
-                if (in_array(parse_url($link, PHP_URL_HOST), $skip_domains)) { continue; } 
-
-                Helpers::printMessage('Пробуем получить статью: '.$link, 'grey');
-                $article_html = $parser->getArticle($link);
-
-                if (!empty($article_html)) {
-                    $skip_domains[] = parse_url($link, PHP_URL_HOST);
-
-                    Helpers::printMessage('Получим картинку', 'grey');
-                    $image_src = $searcher->getImageSrc($header['header']);
-
-                    $article->addArticleParts([
-                        'source'        => $link,
-                        'header'        => $header['header'],
-                        'type_header'   => $header['type'],
-                        'html'          => $article_html,
-                        'image_src'     => $image_src,
-                    ]);
-
-                    break;
+if (!empty($sources)) {
+    foreach ($sources as $key_sources => $source) {    
+        // Получение заголовоков
+        Helpers::printMessage('Сайт: '.($key_sources + 1).'/'.count($sources).' — Получим заголовки с сайта '.$source);
+        $headers = $parser->getHeaders($source);
+        
+        $article = new Article();
+        
+        $skip_domains = [];
+        $skip_domains[] = parse_url($source, PHP_URL_HOST);
+        
+        if (!empty($headers)) {
+            foreach ($headers as $key_headers => $header) {
+                // Получение сайтов по запросу
+                Helpers::printMessage('Сайт: '.($key_sources + 1).'/'.count($sources).', заголовок: '.($key_headers + 1).'/'.count($headers).' — Получим сайты по запросу: '.$header['header']);
+                $links = $searcher->getLinks($header['header']);
+        
+                if (!empty($links)) {
+                    foreach ($links as $key_links => $link) {
+                        // Пропускаем первые 5 результатов
+                        if ($key_links < 3)  { continue; }
+        
+                        // Пропускаем сайты в которых встречается wiki т.к. на них много лишнего
+                        if (stripos($link, 'wiki') !== false) { continue; }
+        
+                        // Пропускаем сайты с которых уже брали информацию
+                        if (in_array(parse_url($link, PHP_URL_HOST), $skip_domains)) { continue; } 
+        
+                        Helpers::printMessage('Пробуем получить статью: '.$link, 'grey');
+                        $article_html = $parser->getArticle($link);
+        
+                        if (!empty($article_html)) {
+                            $skip_domains[] = parse_url($link, PHP_URL_HOST);
+        
+                            Helpers::printMessage('Получим картинку', 'grey');
+                            $image_src = $searcher->getImageSrc($header['header']);
+        
+                            $article->addArticleParts([
+                                'source'        => $link,
+                                'header'        => $header['header'],
+                                'type_header'   => $header['type'],
+                                'html'          => $article_html,
+                                'image_src'     => $image_src,
+                            ]);
+        
+                            break;
+                        }
+                    }
                 }
             }
         }
