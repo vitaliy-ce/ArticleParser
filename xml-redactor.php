@@ -11,7 +11,22 @@ $xml = simplexml_load_file($file, 'SimpleXMLElement', LIBXML_NOCDATA);
 
 // Сохранение результата
 if (isset($_POST['article_index'])) {
-    $xml->article[ (int)$_POST['article_index'] ]->text = $_POST['text'];
+    if (isset($_POST['text'])) {
+        $xml->article[ (int)$_POST['article_index'] ]->text = $_POST['text'];
+    }
+
+    if (isset($_POST['name'])) {
+        $xml->article[ (int)$_POST['article_index'] ]->name = $_POST['name'];
+    }
+
+    if (isset($_POST['title'])) {
+        $xml->article[ (int)$_POST['article_index'] ]->title = $_POST['title'];
+    }
+
+    if (isset($_POST['sources'])) {
+        $xml->article[ (int)$_POST['article_index'] ]->sources = $_POST['sources'];
+    }
+
     $xml->asXml($file);
 
     $alert = 'Статья сохранена';
@@ -47,6 +62,21 @@ $article_index = (int)$_GET['article_index'] ? (int)$_GET['article_index'] : 0;
         <input type="hidden" name="article_index" value="<?=$article_index?>">
         <div class="mb-3">
             <textarea class="form-control summernote" name="text" rows="10"><?=$xml->article[ $article_index ]->text ?? ''?></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input type="text" class="form-control" name="name" value="<?=htmlspecialchars($xml->article[ $article_index ]->name ?? '')?>">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" name="title" value="<?=htmlspecialchars($xml->article[ $article_index ]->title ?? '')?>">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Источники</label>
+            <textarea class="form-control" name="sources" rows="2"><?=$xml->article[ $article_index ]->sources ?? ''?></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>
