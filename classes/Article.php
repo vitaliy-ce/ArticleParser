@@ -13,7 +13,7 @@ class Article
     public function addArticleParts($data)
     {
         $this->article_parts[] = [
-            'source'        => $data['link']            ?? '',
+            'source'        => $data['source']            ?? '',
             'header'        => $data['header']          ?? '',
             'type_header'   => $data['type_header']     ?? 'h2',
             'html'          => $data['html']            ?? '',
@@ -27,12 +27,11 @@ class Article
             mkdir($storage_dir, 0755, true);
         }
 
-        $html = $this->getHtmlArticle();
-
         $article_xml = "\t<article>\n";
         $article_xml .= "\t\t<name>".$this->article_parts[0]['header']."</name>\n";
         $article_xml .= "\t\t<title>".$this->article_parts[0]['header']."</title>\n";
-        $article_xml .= "\t\t<text><![CDATA[".$html."]]></text>\n";
+        $article_xml .= "\t\t<sources><![CDATA[".$this->getSources()."]]></sources>\n";
+        $article_xml .= "\t\t<text><![CDATA[".$this->getHtml()."]]></text>\n";
         $article_xml .= "\t</article>\n";
         
         $old_xml = '';
@@ -50,12 +49,13 @@ class Article
         file_put_contents($storage_dir.'/result.xml', $xml);
     }
 
-    private function getHtmlArticle()
+    // Сборка html статьи из частей
+    private function getHtml()
     {
         $html = '';
         if (!empty($this->article_parts)) {
-            foreach ($this->article_parts as $article_part) {
-                if (!empty($article_part['image_src'])) {
+            foreach ($this->article_parts as $key => $article_part) {
+                if (!empty($article_part['image_src']) && $key) {
                     $html .= '<img src="'.$article_part['image_src'].'">'."\n";
                 }
                 $html .= '<'.$article_part['type_header'].'>'.$article_part['header'].'</'.$article_part['type_header'].'>'."\n";                
@@ -64,5 +64,20 @@ class Article
         }
 
         return $html;
+    }
+
+    // Сайты с которых была вязта информация
+    private function getSources()
+    {
+        $sources = [];
+        if (!empty($this->article_parts)) {
+            foreach ($this->article_parts as $article_part) {
+                if (!empty($article_part['source'])) {
+                    $sources[] = parse_url($article_part['source'], PHP_URL_HOST);
+                }
+            }
+        }
+
+        return implode("\n", $sources);
     }
 }
