@@ -32,7 +32,7 @@ class Article
         $article_xml = "\t<article>\n";
         $article_xml .= "\t\t<name>".$this->article_parts[0]['header']."</name>\n";
         $article_xml .= "\t\t<title>".$this->article_parts[0]['header']."</title>\n";
-        $article_xml .= "\t\t<text><![CDATA[".$html."]]></title>\n";
+        $article_xml .= "\t\t<text><![CDATA[".$html."]]></text>\n";
         $article_xml .= "\t</article>\n";
         
         $old_xml = '';
