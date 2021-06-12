@@ -78,6 +78,6 @@ class Article
             }
         }
 
-        return implode("\n", $sources);
+        return implode(", ", $sources);
     }
 }
